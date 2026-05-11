@@ -1,18 +1,11 @@
 import requests
 
-BASE_URL = "https://pastedb.onrender.com"
+class Client:
+    def __init__(self, api_key):
+        self.api_key = api
 
-def makePaste(title, content, api_key):
+    def test(self):
+        return self.api_key
 
-    res = requests.post(
-        f"{BASE_URL}/api/make-paste",
-        headers={
-            "x-api-key": api_key
-        },
-        json={
-            "title": title,
-            "content": content
-        }
-    )
 
-    return res.json()
+    
