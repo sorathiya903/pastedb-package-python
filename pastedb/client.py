@@ -37,8 +37,8 @@ class Client:
             data
         )
         
-        def me(self):
-            return knowMe(self.api_key)
+    def me(self):
+        return knowMe(self.api_key)
 
 
 
