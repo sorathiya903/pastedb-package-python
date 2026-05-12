@@ -38,7 +38,7 @@ class Client:
         )
         
         def me(self):
-            knowMe(self.api_key)
+            return knowMe(self.api_key)
 
 
 
