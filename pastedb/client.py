@@ -8,33 +8,15 @@ class Client:
 
     def makePaste(
 
-        self,
-
-        title,
-
-        content,
-
-        syntax="text",
-
-        visibility="public"
+        self,data :dict
     ):
 
-        data = {
-
-            "title": title,
-
-            "content": content,
-
-            "syntax": syntax,
-
-            "visibility": visibility
-        }
-
+        info=data
         return create_paste_request(
 
             self.api_key,
 
-            data
+            info
         )
         
     def me(self):
