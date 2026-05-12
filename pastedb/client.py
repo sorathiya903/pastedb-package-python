@@ -1,5 +1,4 @@
-from api import create_paste_request
-
+from api import create_paste_request, knowMe
 
 class Client:
 
@@ -37,3 +36,10 @@ class Client:
 
             data
         )
+        
+        def me(self):
+            knowMe(self.api_key)
+
+
+
+
