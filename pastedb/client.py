@@ -1,4 +1,4 @@
-from api import create_paste_request, knowMe
+from .api import create_paste_request, knowMe
 
 class Client:
 
