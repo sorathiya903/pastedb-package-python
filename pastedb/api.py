@@ -1,8 +1,22 @@
 import requests
 
-class Client:
-    def __init__(self, api_key): # Fixed argument name
-        self.api_key = api_key   # Match the argument above
+BASE_URL = "https://pastedb.onrender.com"
 
-    def test(self):
-        return self.api_key
+
+def create_paste_request(
+    api_key,
+    data
+):
+
+    response = requests.post(
+
+        f"{BASE_URL}/api/create",
+
+        headers={
+            "x-api-key": api_key
+        },
+
+        json=data
+    )
+
+    return response.json()
