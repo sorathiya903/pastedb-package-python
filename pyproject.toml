@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pastedb"
-version = "1.0.10"
+version = "1.0.11"
 description = "PasteDB Python SDK"
+readme = "README.md"
 authors = [{ name="Aditya" }]
 dependencies = ["requests"]
