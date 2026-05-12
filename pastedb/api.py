@@ -20,3 +20,10 @@ def create_paste_request(
     )
 
     return response.json()
+
+def knowMe(api_key):
+    res = requests.post("https://pastedb.onrender.com/api/me",
+                        headers={"x-api-key":api_key}
+                       
+                       )
+    return res.json()
