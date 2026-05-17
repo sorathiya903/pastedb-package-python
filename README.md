@@ -8,7 +8,6 @@ Supports:
 - Explore public pastes
 - Semantic vector search
 - Star system
-- Collections
 - Markdown rendering
 - Code execution
 - API key management
@@ -262,38 +261,6 @@ user_starred()
 Get starred pastes from a user.
 ```
 starred = client.user_starred("aditya")
-```
----
-
-## Collection Methods
-```
-create_collection()
-```
-Create a collection.
-```
-collection = client.create_collection(
-    name="Frontend Snippets",
-    description="Useful frontend snippets"
-)
-```
----
-```
-add_to_collection()
-```
-Add paste to collection.
-```
-client.add_to_collection(
-    collection_id="123",
-    paste_id="abc123"
-)
-```
----
-```
-get_collection()
-```
-Get collection details.
-```
-collection = client.get_collection("123")
 ```
 ---
 
