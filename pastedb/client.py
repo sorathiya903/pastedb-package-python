@@ -1,4 +1,5 @@
-import requests from typing import Optional, Dict, Any, List
+import requests
+from typing import Optional, Dict, Any, List
 
 class PasteDBError(Exception): pass
 
