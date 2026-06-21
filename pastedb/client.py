@@ -7,7 +7,7 @@ class PasteDBClient:
 def __init__(
     self,
     api_key: Optional[str] = None,
-    base_url: str = "https://pastedb.onrender.com"
+    base_url: str = "https://pastedb-rw62.onrender.com"
 ):
 
     self.base_url = base_url.rstrip("/")
