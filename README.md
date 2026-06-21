@@ -17,6 +17,28 @@ Get your API key from [PasteDB Dashboard → API Keys](https://pastedb.netlify.a
 export PASTEDB_API_KEY="pdb_live_xxxxxxxxxxxxx"
 ```
 
+## ME
+● Me()
+```python
+from pastedb import Client
+
+
+client = Client(api_key="pdb_pdb_live_xxxxxxxxxxxxx")
+
+print(client.me())
+```
+
+Response if API key is valid
+
+```
+{
+'email': 'your@email.com',
+'created_at': '2026-06-21T05:26:34.361000' # Dummy
+}
+
+
+```
+
 ## Quick Start
 
 ```python
