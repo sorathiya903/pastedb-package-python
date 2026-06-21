@@ -1,389 +1,248 @@
+
 # PasteDB Python SDK
 
-Official Python SDK for interacting with the PasteDB API.
+Official Python SDK for [PasteDB](https://pastedb.netlify.app) — a fast, elegant text and image sharing platform.
 
-Supports:
-
-- Create and manage pastes
-- Explore public pastes
-- Semantic vector search
-- Star system
-- Markdown rendering
-- Code execution
-- API key management
-- Analytics
-
----
-
-# Installation
+## Installation
 
 ```
-
 pip install pastedb
-
 ```
 
+## Authentication
 
----
+Get your API key from [PasteDB Dashboard → API Keys](https://pastedb.netlify.app/api-keys).
 
-Quick Start
-
+```bash
+export PASTEDB_API_KEY="pdb_live_xxxxxxxxxxxxx"
 ```
-import pastedb
 
-client = PasteDBClient(
-    api_key="YOUR_API_KEY"
-)
+## Quick Start
 
+```python
+from pastedb import Client
+
+# Initialize client
+client = Client(api_key="pdb_live_xxxxxxxxxxxxx")
+
+# Create a paste
 paste = client.create_paste(
     title="Hello World",
-    content="print('Hello')",
+    content="print('Hello from PasteDB!')",
     syntax="python"
 )
 
-print(paste)
+print(paste.url)  # https://pastedb.netlify.app/p/abc123
+print(paste.id)   # abc123
 ```
----
 
-Initialize Client
-```
-from client import PasteDBClient
+## Core Features
 
-client = PasteDBClient(
-    api_key="YOUR_API_KEY"
-)
-```
-Parameters
+### 1. Create Pastes
 
-Parameter| Type| Description
-api_key| str| Your PasteDB API key
-base_url| str| Custom API URL
+```python
+from pastedb import Client
+client = Client()
 
----
-
-Paste Methods
-```
-create_paste()
-```
-Create a new paste.
-```
+# Basic paste
 paste = client.create_paste(
-    title="Example",
-    content="print('Hello')",
-    syntax="python"
+    content="Your text here",
+    title="My Paste",
+    syntax="javascript"
+)
+
+# Private paste with password
+paste = client.create_paste(
+    content="Secret data",
+    visibility="private",
+    password="mySecret123"
+)
+
+# Paste with custom URL and expiry
+paste = client.create_paste(
+    content="Temporary data",
+    custom_id="temp-data-2024",
+    expire_in="1d",
+    syntax="json"
+)
+
+# Paste with images
+paste = client.create_paste(
+    content="Check out this screenshot",
+    images=["/path/to/image1.png", "/path/to/image2.jpg"]
 )
 ```
-Parameters
 
-Parameter| Type| Default| Description
-title| str| Required| Paste title
-content| str| Required| Paste content
-syntax| str| plaintext| Syntax language
-visibility| str| public| public/private/unlisted
-expiration| str| never| Expiration time
-password| str| None| Password protection
-tags| list| []| Tags list
+**Parameters**
 
----
-```
-get_paste()
-```
-Get a paste by ID.
-```
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `content` | str | required | The paste content |
+| `title` | str | `Untitled` | Paste title |
+| `syntax` | str | `text` | Syntax: `python`, `javascript`, `json`, etc |
+| `visibility` | str | `public` | `public` or `private` |
+| `password` | str | None | Password protect the paste |
+| `custom_id` | str | None | Custom URL slug |
+| `expire_in` | str | `never` | `1h`, `1d`, `7d`, `30d`, `never` |
+| `images` | list | [] | Image file paths |
+
+### 2. Get Pastes
+
+```python
+client = Client()
+
+# Get by ID or custom slug
 paste = client.get_paste("abc123")
+paste = client.get_paste("my-custom-url")
+
+print(paste.title)
+print(paste.content)
+
+# Get private paste with password
+paste = client.get_paste("secret123", password="mySecret123")
 ```
----
+
+### 3. List Your Pastes
+
+```python
+client = Client()
+pastes = client.list_pastes()
+
+for p in pastes:
+    print(f"{p.title} - {p.url} - Views: {p.views}")
+
+# Filter by visibility
+public_pastes = client.list_pastes(visibility="public")
+
+# Pagination
+pastes = client.list_pastes(limit=20, offset=0)
 ```
-edit_paste()
-```
-Edit an existing paste.
-```
-client.edit_paste(
+
+### 4. Update Pastes
+
+```python
+client = Client()
+paste = client.update_paste(
     "abc123",
-    title="Updated Title"
+    title="Updated Title",
+    content="New content here",
+    syntax="markdown"
 )
 ```
-You can update:
 
-- title
-- content
-- syntax
-- visibility
-- tags
-- expiration
+### 5. Delete Pastes
 
----
-```
-delete_paste()
-```
-Delete a paste.
-```
+```python
+client = Client()
 client.delete_paste("abc123")
 ```
----
-```
-fork_paste()
-```
-Create a copy of an existing paste.
-```
-forked = client.fork_paste("abc123")
-```
----
-```
-raw()
-```
-Get raw paste text.
-```
-raw = client.raw("abc123")
 
-print(raw)
-```
----
+### 6. Get Analytics
 
-## Search Methods
-```
-search()
-```
-Search public pastes.
-```
-results = client.search(
-    query="fastapi auth",
-    syntax="python"
-)
-```
-Parameters
+```python
+client = Client()
+stats = client.get_analytics("abc123")
 
-Parameter| Type| Description
-query| str| Search query
-syntax| str| Filter by language
-user| str| Filter by user
-tags| list| Filter by tags
+print(stats.views)           # 142
+print(stats.unique_visitors) # 89
+print(stats.last_viewed)     # 2024-06-21T10:30:00Z
+```
 
----
-```
-vector_search()
-```
-Semantic vector search powered by MongoDB Vector Search.
-```
-results = client.vector_search(
-    "dark animated navbar"
-)
-```
-Finds similar pastes by meaning instead of exact keywords.
+## Error Handling
 
----
+```python
+from pastedb import Client
+from pastedb.exceptions import PasteDBError, NotFoundError, AuthError
 
-## Explore Methods
-```
-explore()
-```
-Get explore page pastes.
-```
-pastes = client.explore()
-```
----
-```
-trending()
-```
-Get trending pastes.
-```
-trending = client.trending()
-```
----
-```
-latest()
-```
-Get latest public pastes.
-```
-latest = client.latest()
-```
----
-```
-popular()
-```
-Get most popular pastes.
-
-popular = client.popular()
-
----
-
-## Star Methods
-```
-star()
-```
-Toggle star on a paste.
-```
-client.star("abc123")
-```
-If already starred, it removes the star.
-
----
-
-## Analytics Methods
-```
-paste_stats()
-```
-Get analytics for a paste.
-```
-stats = client.paste_stats("abc123")
-```
-Example response:
-```
-{
-    "views": 120,
-    "copies": 30,
-    "shares": 12,
-    "stars": 9
-}
-```
----
-
-## User Methods
-```
-me()
-```
-Get current authenticated user.
-```
-user = client.me()
-```
----
-```
-user_pastes()
-```
-Get public pastes from a user.
-```
-pastes = client.user_pastes("aditya")
-```
----
-```
-user_starred()
-```
-Get starred pastes from a user.
-```
-starred = client.user_starred("aditya")
-```
----
-
-## Code Runner Methods
-```
-run()
-```
-Execute code.
-```
-result = client.run(
-    language="python",
-    code="print('Hello')"
-)
-```
----
-```
-supported_languages()
-```
-Get supported execution languages.
-```
-languages = client.supported_languages()
-```
----
-
-## Markdown Methods
-```
-render_markdown()
-```
-Render markdown into HTML.
-```
-html = client.render_markdown(
-    "# Hello World"
-)
-```
----
-
-## API Key Methods
-```
-create_api_key()
-```
-Create API key.
-```
-key = client.create_api_key(
-    "My Application"
-)
-```
----
-```
-get_api_keys()
-```
-Get all API keys.
-```
-keys = client.get_api_keys()
-```
----
-```
-delete_api_key()
-```
-Delete API key.
-```
-client.delete_api_key("key123")
-```
----
-
-Error Handling
-
-The SDK raises "PasteDBError" when requests fail.
-```
-from client import PasteDBClient, PasteDBError
+client = Client(api_key="pdb_live_xxx")
 
 try:
-
-    client = PasteDBClient(
-        api_key="INVALID"
-    )
-
-    client.me()
-
+    paste = client.get_paste("invalid-id")
+except NotFoundError:
+    print("Paste not found")
+except AuthError:
+    print("Invalid API key")
 except PasteDBError as e:
-
-    print(e)
+    print(f"API error: {e}")
 ```
----
 
-Example Project
+## Advanced Usage
+
+### Rate Limits
+
+Free tier: 60 requests/minute  
+Pro tier: 600 requests/minute
+
+```python
+client = Client(api_key="xxx", max_retries=3, timeout=30)
 ```
-from client import PasteDBClient
 
-client = PasteDBClient(
-    api_key="YOUR_API_KEY"
-)
+### Environment Variable
 
-paste = client.create_paste(
-    title="Quick Sort",
-    content="print('Sorting')",
-    syntax="python",
-    tags=["algorithm", "python"]
-)
+If `PASTEDB_API_KEY` is set, you can omit the key:
 
-print("Created:", paste)
-
-stats = client.paste_stats(
-    paste["id"]
-)
-
-print(stats)
+```python
+from pastedb import Client
+client = Client()  # Uses PASTEDB_API_KEY env var
 ```
----
 
-Features
+## API Reference
 
-- Clean Python API
-- Easy authentication
-- Semantic search
-- Code execution
-- Collections support
-- Markdown rendering
-- Analytics support
-- API key management
-- Fast integration
+### `Client(api_key=None, base_url=None, timeout=30, max_retries=3)`
 
----
+Create a new PasteDB client. If `api_key` is None, reads from `PASTEDB_API_KEY` env var.
 
-License
+### `Paste` Object
+
+| Attribute | Type | Description |
+| --- | --- | --- |
+| `id` | str | Paste ID |
+| `url` | str | Full paste URL |
+| `title` | str | Paste title |
+| `content` | str | Paste content |
+| `syntax` | str | Syntax language |
+| `visibility` | str | `public` or `private` |
+| `created_at` | datetime | Creation timestamp |
+| `expire_at` | datetime | Expiry timestamp or None |
+| `views` | int | View count |
+| `images` | list | List of image URLs |
+
+## Examples
+
+### CLI Tool
+
+```python
+import sys
+from pastedb import Client
+
+client = Client()
+content = sys.stdin.read()
+paste = client.create_paste(content=content, title="CLI Paste")
+print(paste.url)
+```
+
+Usage: `cat file.py | python paste.py`
+
+## Supported Syntax Highlighting
+
+`text`, `python`, `javascript`, `typescript`, `json`, `yaml`, `markdown`, `html`, `css`, `sql`, `bash`, `c`, `cpp`, `java`, `go`, `rust`, `php`, `ruby`, `swift`, `kotlin`, and many more.
+
+## Security
+
+- API keys are never logged by the SDK
+- All requests use HTTPS
+- Data stored on MongoDB Atlas
+
+## Support
+
+- **Docs**: https://pastedb.netlify.app/docs
+- **Issues**: https://github.com/sorathiya903/
+
+## License
 
 MIT License
+
+---
+
+Built with ❤️ for developers by PasteDB
+```
