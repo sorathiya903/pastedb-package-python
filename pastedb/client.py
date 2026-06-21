@@ -58,9 +58,7 @@ class Client:
     def get_paste(self, paste_id: str):
         return self._request("GET", f"/p/{paste_id}")
 
-    def delete_paste(self, paste_id: str):
-        return self._request("DELETE", f"/delete/{paste_id}")
-
+    
     def api_update_paste(  self,  paste_id: str,   data: Dict[str, Any]):
         return self._request(
             "PUT",
