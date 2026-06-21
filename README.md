@@ -1,7 +1,7 @@
 
 # PasteDB Python SDK
 
-Official Python SDK for [PasteDB](https://pastedb.netlify.app) — a fast, elegant text and image sharing platform.
+Official Python SDK for [PasteDB](https://pastedb.netlify.app) — FastAPI powered text and image sharing platform.
 
 ## Installation
 
@@ -22,194 +22,194 @@ export PASTEDB_API_KEY="pdb_live_xxxxxxxxxxxxx"
 ```python
 from pastedb import Client
 
-# Initialize client
+# Initialize client - reads PASTEDB_API_KEY env var or pass api_key
 client = Client(api_key="pdb_live_xxxxxxxxxxxxx")
 
-# Create a paste
-paste = client.create_paste(
-    title="Hello World",
-    content="print('Hello from PasteDB!')",
-    syntax="python"
-)
+# Create a paste - pass data as dict
+paste = client.create_paste({
+    "content": "print('Hello from PasteDB!')",
+    "title": "Hello World",
+    "syntax": "python"
+})
 
-print(paste.url)  # https://pastedb.netlify.app/p/abc123
-print(paste.id)   # abc123
+print(paste["url"])  # https://pastedb.netlify.app/p/abc123
+print(paste["id"])   # abc123
 ```
 
-## Core Features
+## Core API Methods
 
-### 1. Create Pastes
+The SDK methods mirror the FastAPI backend routes. All data is passed as dictionaries and responses are returned as dictionaries.
+
+### 1. Create Paste
+
+`POST /pastes`
 
 ```python
 from pastedb import Client
 client = Client()
 
 # Basic paste
-paste = client.create_paste(
-    content="Your text here",
-    title="My Paste",
-    syntax="javascript"
-)
+paste = client.create_paste({
+    "content": "Your text here",
+    "title": "My Paste",
+    "syntax": "javascript"
+})
 
 # Private paste with password
-paste = client.create_paste(
-    content="Secret data",
-    visibility="private",
-    password="mySecret123"
-)
+paste = client.create_paste({
+    "content": "Secret data",
+    "visibility": "private",
+    "password": "mySecret123"
+})
 
-# Paste with custom URL and expiry
-paste = client.create_paste(
-    content="Temporary data",
-    custom_id="temp-data-2024",
-    expire_in="1d",
-    syntax="json"
-)
-
-# Paste with images
-paste = client.create_paste(
-    content="Check out this screenshot",
-    images=["/path/to/image1.png", "/path/to/image2.jpg"]
-)
+# Custom URL + expiry
+paste = client.create_paste({
+    "content": "Temporary data",
+    "custom_id": "temp-data-2024",
+    "expiration": "1d",
+    "syntax": "json"
+})
 ```
 
-**Parameters**
+**Request Body**
 
-| Parameter | Type | Default | Description |
+| Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `content` | str | required | The paste content |
-| `title` | str | `Untitled` | Paste title |
-| `syntax` | str | `text` | Syntax: `python`, `javascript`, `json`, etc |
-| `visibility` | str | `public` | `public` or `private` |
-| `password` | str | None | Password protect the paste |
-| `custom_id` | str | None | Custom URL slug |
-| `expire_in` | str | `never` | `1h`, `1d`, `7d`, `30d`, `never` |
-| `images` | list | [] | Image file paths |
+| `content` | str | Yes | Paste content |
+| `title` | str | No | Default: `Untitled` |
+| `syntax` | str | No | Default: `text` |
+| `visibility` | str | No | `public` or `private`, default `public` |
+| `password` | str | No | Password for private pastes |
+| `custom_id` | str | No | Custom slug for URL |
+| `expiration` | str | No | `1h`, `1d`, `7d`, `30d`, `never` |
 
-### 2. Get Pastes
+**Response**
+
+```json
+{
+  "id": "abc123",
+  "title": "My Paste",
+  "content": "Your text here",
+  "syntax": "javascript",
+  "visibility": "public",
+  "created_at": "1781262330.906314"
+}
+OR
+{
+    'status': 'success',
+    'id': '6a378ece819c1a9b62472339', 
+    'custom_id': None
+}
+
+
+
+[Program finished]
+```
+
+### 2. Get Paste
+
+`GET /pastes/{paste_id}`
 
 ```python
 client = Client()
 
-# Get by ID or custom slug
+# Get by ID
 paste = client.get_paste("abc123")
+
+# Get by custom slug
 paste = client.get_paste("my-custom-url")
 
-print(paste.title)
-print(paste.content)
+# Get private paste - pass password in params
+paste = client.get_paste("secret123", params={"password": "mySecret123"})
 
-# Get private paste with password
-paste = client.get_paste("secret123", password="mySecret123")
+print(paste["title"])
+print(paste["content"])
 ```
 
-### 3. List Your Pastes
+
+### 4. Update Paste
+
+`PATCH /pastes/{paste_id}`
 
 ```python
 client = Client()
-pastes = client.list_pastes()
-
-for p in pastes:
-    print(f"{p.title} - {p.url} - Views: {p.views}")
-
-# Filter by visibility
-public_pastes = client.list_pastes(visibility="public")
-
-# Pagination
-pastes = client.list_pastes(limit=20, offset=0)
+paste = client.update_paste("abc123", {
+    "title": "Updated Title",
+    "content": "New content here",
+    "syntax": "markdown"
+})
 ```
 
-### 4. Update Pastes
+### 5. Delete Paste
 
-```python
-client = Client()
-paste = client.update_paste(
-    "abc123",
-    title="Updated Title",
-    content="New content here",
-    syntax="markdown"
-)
-```
-
-### 5. Delete Pastes
+`DELETE /pastes/{paste_id}`
 
 ```python
 client = Client()
 client.delete_paste("abc123")
 ```
 
-### 6. Get Analytics
+
+
+### 7. Get Analytics
+
+`GET /pastes/{paste_id}/analytics`
 
 ```python
 client = Client()
 stats = client.get_analytics("abc123")
 
-print(stats.views)           # 142
-print(stats.unique_visitors) # 89
-print(stats.last_viewed)     # 2024-06-21T10:30:00Z
+print(stats["views"])           # 142
+print(stats["unique_visitors"]) # 89
 ```
 
 ## Error Handling
 
+The SDK raises `requests.HTTPError` for API errors. Status codes match FastAPI:
+
 ```python
 from pastedb import Client
-from pastedb.exceptions import PasteDBError, NotFoundError, AuthError
+from requests import HTTPError
 
 client = Client(api_key="pdb_live_xxx")
 
 try:
     paste = client.get_paste("invalid-id")
-except NotFoundError:
-    print("Paste not found")
-except AuthError:
-    print("Invalid API key")
-except PasteDBError as e:
-    print(f"API error: {e}")
+except HTTPError as e:
+    if e.response.status_code == 404:
+        print("Paste not found")
+    elif e.response.status_code == 401:
+        print("Invalid API key")
+    elif e.response.status_code == 403:
+        print("Password required")
+    else:
+        print(f"API error: {e}")
 ```
 
-## Advanced Usage
-
-### Rate Limits
-
-Free tier: 60 requests/minute  
-Pro tier: 600 requests/minute
-
-```python
-client = Client(api_key="xxx", max_retries=3, timeout=30)
-```
-
-### Environment Variable
-
-If `PASTEDB_API_KEY` is set, you can omit the key:
+## Client Configuration
 
 ```python
 from pastedb import Client
-client = Client()  # Uses PASTEDB_API_KEY env var
+
+client = Client(
+    api_key="pdb_live_xxx",  # Optional, uses env var if None
+    base_url="https://api.pastedb.netlify.app",  # Override default   
+)
 ```
 
-## API Reference
+## FastAPI Backend Reference
 
-### `Client(api_key=None, base_url=None, timeout=30, max_retries=3)`
+Your backend routes use these FastAPI dependencies:
 
-Create a new PasteDB client. If `api_key` is None, reads from `PASTEDB_API_KEY` env var.
+```python
+from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request, status, Response
+```
 
-### `Paste` Object
-
-| Attribute | Type | Description |
-| --- | --- | --- |
-| `id` | str | Paste ID |
-| `url` | str | Full paste URL |
-| `title` | str | Paste title |
-| `content` | str | Paste content |
-| `syntax` | str | Syntax language |
-| `visibility` | str | `public` or `private` |
-| `created_at` | datetime | Creation timestamp |
-| `expire_at` | datetime | Expiry timestamp or None |
-| `views` | int | View count |
-| `images` | list | List of image URLs |
+The SDK handles auth via `Authorization: Bearer <api_key>` header or cookies.
 
 ## Examples
 
-### CLI Tool
+### CLI Upload
 
 ```python
 import sys
@@ -217,26 +217,18 @@ from pastedb import Client
 
 client = Client()
 content = sys.stdin.read()
-paste = client.create_paste(content=content, title="CLI Paste")
-print(paste.url)
+paste = client.create_paste({"content": content, "title": "CLI Paste"})
+print(paste["url"])
 ```
 
 Usage: `cat file.py | python paste.py`
 
-## Supported Syntax Highlighting
+
+
+## Supported Syntax
 
 `text`, `python`, `javascript`, `typescript`, `json`, `yaml`, `markdown`, `html`, `css`, `sql`, `bash`, `c`, `cpp`, `java`, `go`, `rust`, `php`, `ruby`, `swift`, `kotlin`, and many more.
 
-## Security
-
-- API keys are never logged by the SDK
-- All requests use HTTPS
-- Data stored on MongoDB Atlas
-
-## Support
-
-- **Docs**: https://pastedb.netlify.app/docs
-- **Issues**: https://github.com/sorathiya903/
 
 ## License
 
@@ -244,5 +236,4 @@ MIT License
 
 ---
 
-Built with ❤️ for developers by PasteDB
-```
+Built with ❤️ using FastAPI
