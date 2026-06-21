@@ -14,7 +14,7 @@ pip install pastedb
 Get your API key from [PasteDB Dashboard → API Keys](https://pastedb.netlify.app/api-keys).
 
 ```bash
-export PASTEDB_API_KEY="pdb_live_xxxxxxxxxxxxx"
+export PASTEDB_API_KEY="pdb_xxxxxxxxxxxx"
 ```
 
 ## ME
@@ -23,12 +23,12 @@ export PASTEDB_API_KEY="pdb_live_xxxxxxxxxxxxx"
 from pastedb import Client
 
 
-client = Client(api_key="pdb_pdb_live_xxxxxxxxxxxxx")
+client = Client(api_key="pdb_xxxxxxxxxxxxx")
 
 print(client.me())
 ```
 
-Response if API key is valid
+*Response if **API key is valid***
 
 ```
 {
@@ -45,7 +45,7 @@ Response if API key is valid
 from pastedb import Client
 
 # Initialize client - reads PASTEDB_API_KEY env var or pass api_key
-client = Client(api_key="pdb_live_xxxxxxxxxxxxx")
+client = Client(api_key="pdb_xxxxxxxxxxxxx")
 
 # Create a paste - pass data as dict
 paste = client.create_paste({
@@ -54,7 +54,6 @@ paste = client.create_paste({
     "syntax": "python"
 })
 
-print(paste["url"])  # https://pastedb.netlify.app/p/abc123
 print(paste["id"])   # abc123
 ```
 
@@ -68,11 +67,7 @@ The SDK methods mirror the FastAPI backend routes. All data is passed as diction
 
 ```python
 from pastedb import Client
-client = Client()
-
-# Basic paste
-paste = client.create_paste({
-    "content": "Your text here",
+ "content": "Your text here",
     "title": "My Paste",
     "syntax": "javascript"
 })
@@ -101,7 +96,7 @@ paste = client.create_paste({
 | `title` | str | No | Default: `Untitled` |
 | `syntax` | str | No | Default: `text` |
 | `visibility` | str | No | `public` or `private`, default `public` |
-| `password` | str | No | Password for private pastes |
+| `password` | str | No | Password for private/public pastes |
 | `custom_id` | str | No | Custom slug for URL |
 | `expiration` | str | No | `1h`, `1d`, `7d`, `30d`, `never` |
 
