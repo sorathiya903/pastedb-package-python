@@ -111,16 +111,15 @@ paste = client.create_paste({
   "visibility": "public",
   "created_at": "1781262330.906314"
 }
+```
 OR
+```json
 {
     'status': 'success',
     'id': '6a378ece819c1a9b62472339', 
     'custom_id': None
 }
 
-
-
-[Program finished]
 ```
 
 ### 2. Get Paste
