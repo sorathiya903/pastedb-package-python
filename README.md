@@ -223,21 +223,7 @@ from fastapi import FastAPI, HTTPException, Depends, Query, Cookie, Request, sta
 
 The SDK handles auth via `Authorization: Bearer <api_key>` header or cookies.
 
-## Examples
 
-### CLI Upload
-
-```python
-import sys
-from pastedb import Client
-
-client = Client()
-content = sys.stdin.read()
-paste = client.create_paste({"content": content, "title": "CLI Paste"})
-print(paste["url"])
-```
-
-Usage: `cat file.py | python paste.py`
 
 
 
