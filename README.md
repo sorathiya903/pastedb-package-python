@@ -48,7 +48,7 @@ from pastedb import Client
 client = Client(api_key="pdb_xxxxxxxxxxxxx")
 
 # Create a paste - pass data as dict
-paste = client.create_paste({
+paste = client.create_paste({   # create_paste is for making guest pastes. To make pastes by api key use api_create_paste
     "content": "print('Hello from PasteDB!')",
     "title": "Hello World",
     "syntax": "python"
